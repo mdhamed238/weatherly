@@ -41,7 +41,10 @@
                         <a class="nav-link" href="#" id="healthCheck">Health Check</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="https://github.com/yourusername/weatherly" target="_blank">GitHub</a>
+                        <a class="nav-link" href="/swagger-ui" target="_blank">API Docs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/mdhamed/weatherly" target="_blank">GitHub</a>
                     </li>
                 </ul>
             </div>
@@ -147,6 +150,11 @@
             async function fetchWeather(city) {
                 try {
                     const response = await fetch(`/api/weather/${city}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
                     
                     // Display the results
@@ -234,7 +242,7 @@
                 try {
                     const response = await fetch('/api/health');
                     const data = await response.json();
-                    alert(`Health Status: ${data.status}\nTimestamp: ${data.timestamp}`);
+                    alert(`Health Status: ${data.status}\nTimestamp: ${data.timestamp}\nService: ${data.service}\nVersion: ${data.version}`);
                 } catch (error) {
                     console.error('Error checking health:', error);
                     alert('Error checking health. Service may be down.');

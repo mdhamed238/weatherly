@@ -1,131 +1,168 @@
 # Weatherly API
 
-A Spring Boot Weather API that fetches weather data from Visual Crossing, implements caching, and provides a simple web UI for testing.
+A Spring Boot application that fetches weather data from Visual Crossing's API, implements Redis caching, and provides a clean web interface for testing.
+
+![Weatherly API](https://img.shields.io/badge/Spring%20Boot-3.4.5-brightgreen)
+![Java](https://img.shields.io/badge/Java-21-orange)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
 ## Features
 
-- RESTful API for fetching weather data by city code
-- In-memory caching with configurable TTL
-- Graceful error handling
-- Health check endpoint
-- Responsive web UI for testing
-- Mock data support for development without API key
+- **Weather Data**: Fetch current conditions and forecasts for any city
+- **Redis Caching**: Optimize performance with 12-hour data caching
+- **Rate Limiting**: Protect the API from abuse with Bucket4j rate limiting
+- **API Key Authentication**: Secure your API with key-based authentication
+- **Web UI**: Beautiful Bootstrap-based interface for easy testing
+- **OpenAPI Documentation**: Comprehensive API documentation with Swagger UI
+- **Health Check**: Monitor application status with a dedicated health endpoint
+- **Docker Support**: Easy containerization with Docker and docker-compose
+- **Error Handling**: Consistent error responses with global exception handling
 
 ## Tech Stack
 
-- Java 21
-- Spring Boot 3.4.5
-- WebClient for API requests
-- Bootstrap for the web UI
+- **Spring Boot 3.4.5**: Core framework
+- **Spring WebFlux**: For reactive HTTP requests
+- **Redis**: For caching weather data
+- **Bucket4j**: For rate limiting
+- **Lombok**: For reducing boilerplate code
+- **SpringDoc OpenAPI**: For API documentation
+- **Bootstrap 5**: For the web UI
+- **Docker**: For containerization
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/weather/{cityCode}` | GET | Get weather data for a specific city |
+| `/api/health` | GET | Check API health status |
+| `/` | GET | Redirect to the web UI |
+| `/swagger-ui` | GET | API documentation with Swagger UI |
+| `/v3/api-docs` | GET | OpenAPI specification in JSON format |
 
 ## Getting Started
 
 ### Prerequisites
 
 - Java 21 or higher
-- Maven
-
-### Installation
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/weatherly.git
-   cd weatherly
-   ```
-
-2. Build the project:
-   ```
-   mvn clean install
-   ```
-
-3. Run the application:
-   ```
-   mvn spring-boot:run
-   ```
-
-The application will start on http://localhost:8080
+- Maven 3.8+ (or use the included Maven wrapper)
+- Redis server (optional, for caching)
+- Visual Crossing API key
 
 ### Configuration
 
-The application can be configured using environment variables or by modifying the `application.properties` file:
-
-- `WEATHER_API_KEY`: Your Visual Crossing Weather API key (optional, will use mock data if not provided)
-- `SERVER_PORT`: The port the application will run on (default: 8080)
-
-## API Endpoints
-
-### Get Weather Data
+Create an `.env` file in the project root with the following variables:
 
 ```
-GET /api/weather/{cityCode}
+# Required
+WEATHER_API_KEY=your_visual_crossing_api_key
+
+# Optional
+REDIS_HOST=localhost
+REDIS_PORT=6379
+API_KEY=your_api_key_here
+API_KEY_ENABLED=true
 ```
 
-Parameters:
-- `cityCode`: The city name or code (e.g., london, paris, new-york)
+### Running Locally
 
-Example Response:
+```bash
+# Clone the repository
+git clone https://github.com/mdhamed/weatherly.git
+cd weatherly
+
+# Build the project
+mvn clean install
+
+# Run the application
+mvn spring-boot:run
+```
+
+### Using Docker
+
+```bash
+# Build and run with Docker Compose
+docker-compose up -d
+```
+
+This will start both the Weatherly API and Redis container for caching.
+
+## Security Features
+
+### API Key Authentication
+
+When enabled, all API endpoints require an API key to be included in the request header:
+
+```bash
+curl -X GET "http://localhost:8080/api/weather/london" -H "X-API-Key: your_api_key_here"
+```
+
+Enable API key authentication by setting:
+```
+API_KEY=your_secret_key
+API_KEY_ENABLED=true
+```
+
+### Rate Limiting
+
+The API implements rate limiting to prevent abuse. By default, it allows:
+- 20 requests capacity
+- 10 tokens refilled every minute
+
+Rate limit headers are included in responses:
+- `X-Rate-Limit-Remaining`: Number of remaining requests
+- `X-Rate-Limit-Retry-After-Seconds`: Seconds to wait when limit is exceeded
+
+## Testing
+
+The application includes unit tests for controllers and services:
+
+```bash
+# Run tests
+mvn test
+```
+
+## API Usage
+
+### Example Request
+
+```bash
+curl -X GET "http://localhost:8080/api/weather/london" -H "accept: application/json" -H "X-API-Key: your_api_key_here"
+```
+
+### Example Response
+
 ```json
 {
-  "location": "london",
-  "resolvedAddress": "London, United Kingdom",
-  "description": "Partly cloudy throughout the day with a chance of rain.",
+  "location": "London",
+  "resolvedAddress": "London, England, United Kingdom",
+  "description": "Clear conditions throughout the day.",
   "currentConditions": {
-    "temp": 15.5,
-    "feelslike": 14.0,
-    "humidity": 70.0,
-    "windspeed": 12.5,
-    "conditions": "Cloudy",
-    "datetime": "2025-04-29T12:00:00"
+    "temp": 18.5,
+    "feelslike": 18.2,
+    "humidity": 72.3,
+    "windspeed": 11.5,
+    "conditions": "Clear"
   },
   "forecast": [
     {
-      "datetime": "2025-04-29",
-      "temp": 15.5,
-      "feelslike": 14.0,
-      "humidity": 70.0,
-      "windspeed": 12.5,
-      "conditions": "Cloudy",
-      "description": "Cloudy throughout the day."
+      "datetime": "2025-04-30",
+      "temp": 19.2,
+      "feelslike": 19.0,
+      "humidity": 68.4,
+      "windspeed": 9.8,
+      "conditions": "Partly cloudy"
     },
-    ...
+    // More forecast days...
   ]
 }
 ```
 
-### Health Check
-
-```
-GET /api/health
-```
-
-Example Response:
-```json
-{
-  "status": "UP",
-  "timestamp": "2025-04-29T12:00:00"
-}
-```
-
-## Web UI
-
-A simple web UI is available at the root URL (http://localhost:8080) for testing the API. It allows you to:
-
-- Enter a city name and view weather data
-- See the raw API response
-- Check the health of the service
-
-## Development
-
-### Running Tests
-
-```
-mvn test
-```
-
-### Mock Data
-
-When no valid API key is provided, the service will return mock weather data for development and testing purposes.
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- [Visual Crossing](https://www.visualcrossing.com/) for the weather data API
+- [Spring Boot](https://spring.io/projects/spring-boot) for the framework
+- [Bootstrap](https://getbootstrap.com/) for the UI components

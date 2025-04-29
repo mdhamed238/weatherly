@@ -4,10 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -16,6 +15,8 @@ import com.mdhamed.weatherly.model.DailyForecast;
 import com.mdhamed.weatherly.model.WeatherResponse;
 import com.mdhamed.weatherly.service.WeatherService;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,63 +29,54 @@ import lombok.extern.slf4j.Slf4j;
 public class WeatherServiceImpl implements WeatherService {
 
     private final WebClient webClient;
+    private final Counter weatherApiCallCounter;
+    private final Timer weatherApiCallTimer;
+    private final Counter cacheHitCounter;
+    private final Counter cacheMissCounter;
 
     @Value("${weather.api.url}")
     private String apiUrl;
 
     @Value("${weather.api.key}")
     private String apiKey;
-    
-    @Value("${app.cache.time-to-live:43200000}")
-    private long cacheTtl;
-
-    // Simple in-memory cache
-    private final Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
     @Override
+    @Cacheable(value = "weatherData", key = "#cityCode", unless = "#result == null")
     public WeatherResponse getWeatherForCity(String cityCode) {
-        log.info("Fetching weather data for city: {}", cityCode);
-        
-        // Check cache first
-        CacheEntry cachedEntry = cache.get(cityCode);
-        if (cachedEntry != null && !cachedEntry.isExpired()) {
-            log.info("Cache hit for city: {}", cityCode);
-            return cachedEntry.getData();
-        }
-        
-        log.info("Cache miss for city: {}, fetching from API", cityCode);
+        log.debug("Cache miss for city: {}, fetching from API", cityCode);
+        cacheMissCounter.increment();
         
         try {
             // If we have a valid API key, try to get real data
-            if (apiKey != null && !apiKey.isEmpty() && !apiKey.equals("dummy_api_key_for_development")) {
-                WeatherResponse response = fetchFromApi(cityCode);
-                // Cache the response
-                cache.put(cityCode, new CacheEntry(response, cacheTtl));
-                return response;
+            if (apiKey != null && !apiKey.isEmpty() && !apiKey.equals("DUMMY_KEY_FOR_DEVELOPMENT")) {
+                log.info("Using real API to fetch weather data for: {}", cityCode);
+                weatherApiCallCounter.increment();
+                
+                return weatherApiCallTimer.record(() -> fetchFromApi(cityCode));
             } else {
-                log.warn("No valid API key found, returning mock data");
-                WeatherResponse mockData = getMockWeatherData(cityCode);
-                // Cache the mock data
-                cache.put(cityCode, new CacheEntry(mockData, cacheTtl));
-                return mockData;
+                log.warn("No valid API key found, returning mock data for: {}", cityCode);
+                return getMockWeatherData(cityCode);
             }
         } catch (Exception e) {
             log.error("Error fetching weather data from API: {}", e.getMessage(), e);
             // Return mock data in case of error
-            WeatherResponse mockData = getMockWeatherData(cityCode);
-            return mockData;
+            return getMockWeatherData(cityCode);
         }
     }
 
     private WeatherResponse fetchFromApi(String cityCode) {
+        log.debug("Making HTTP request to weather API for city: {}", cityCode);
         return webClient.get()
                 .uri(apiUrl + "/{cityCode}?unitGroup=metric&key={apiKey}", cityCode, apiKey)
                 .retrieve()
                 .bodyToMono(WeatherResponse.class)
+                .doOnSuccess(response -> log.debug("Successfully retrieved weather data for city: {}", cityCode))
+                .doOnError(error -> log.error("Error retrieving weather data for city: {}", cityCode, error))
                 .block();
     }
 
     private WeatherResponse getMockWeatherData(String cityCode) {
+        log.debug("Generating mock weather data for city: {}", cityCode);
         WeatherResponse response = new WeatherResponse();
         response.setLocation(cityCode);
         response.setResolvedAddress(cityCode + ", Mock Country");
@@ -117,25 +109,18 @@ public class WeatherServiceImpl implements WeatherService {
         }
         
         response.setForecast(forecast);
+        log.debug("Generated mock weather data for city: {}", cityCode);
         return response;
     }
     
-    // Inner class for cache entries with expiration
-    private static class CacheEntry {
-        private final WeatherResponse data;
-        private final long expirationTime;
-        
-        public CacheEntry(WeatherResponse data, long ttlMillis) {
-            this.data = data;
-            this.expirationTime = System.currentTimeMillis() + ttlMillis;
-        }
-        
-        public WeatherResponse getData() {
-            return data;
-        }
-        
-        public boolean isExpired() {
-            return System.currentTimeMillis() > expirationTime;
-        }
+    /**
+     * This method is called by AOP when there's a cache hit
+     * It's used to increment the cache hit counter
+     * 
+     * @param cityCode The city code used as cache key
+     */
+    public void cacheHit(String cityCode) {
+        log.debug("Cache hit for city: {}", cityCode);
+        cacheHitCounter.increment();
     }
 }

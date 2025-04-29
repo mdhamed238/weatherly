@@ -33,10 +33,10 @@
 - [x] Document deployment process
 
 ## Additional Features
-- [ ] Add rate limiting
-- [ ] Add Redis caching option
-- [ ] Add API key authentication
-- [ ] Add Swagger/OpenAPI documentation
+- [x] Add rate limiting
+- [x] Add Redis caching option
+- [x] Add API key authentication
+- [x] Add Swagger/OpenAPI documentation
 - [ ] Add metrics and monitoring
 - [ ] Add logging enhancements
 

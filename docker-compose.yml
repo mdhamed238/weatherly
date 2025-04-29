@@ -7,6 +7,25 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - WEATHER_API_KEY=${WEATHER_API_KEY:-dummy_api_key_for_development}
+      - WEATHER_API_KEY=${WEATHER_API_KEY:-DUMMY_KEY_FOR_DEVELOPMENT}
       - SERVER_PORT=8080
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - API_KEY=${API_KEY:-weatherly-api-key-for-development}
+      - API_KEY_ENABLED=${API_KEY_ENABLED:-false}
+    depends_on:
+      - redis
     restart: unless-stopped
+    
+  redis:
+    image: redis:7-alpine
+    container_name: weatherly-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+
+volumes:
+  redis-data:
