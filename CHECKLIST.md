@@ -23,14 +23,14 @@
 
 ## Environment & Configuration
 - [x] Configure application.properties
-- [ ] Create .env.example file
-- [ ] Create environment variable documentation
+- [x] Create .env.example file
+- [x] Create environment variable documentation
 
 ## Deployment
-- [ ] Create Dockerfile
-- [ ] Create docker-compose.yml for local deployment
-- [ ] Create run script for easy startup
-- [ ] Document deployment process
+- [x] Create Dockerfile
+- [x] Create docker-compose.yml for local deployment
+- [x] Create run script for easy startup
+- [x] Document deployment process
 
 ## Additional Features
 - [ ] Add rate limiting
