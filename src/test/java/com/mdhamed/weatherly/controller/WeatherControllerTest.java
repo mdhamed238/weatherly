@@ -1,5 +1,6 @@
 package com.mdhamed.weatherly.controller;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -12,7 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,12 +24,20 @@ import com.mdhamed.weatherly.model.WeatherResponse;
 import com.mdhamed.weatherly.service.WeatherService;
 
 @WebMvcTest(WeatherController.class)
+@Import(WeatherControllerTest.TestConfig.class)
 public class WeatherControllerTest {
+
+    public static class TestConfig {
+        @Bean
+        public WeatherService weatherService() {
+            return mock(WeatherService.class);
+        }
+    }
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private WeatherService weatherService;
 
     private WeatherResponse mockWeatherResponse;

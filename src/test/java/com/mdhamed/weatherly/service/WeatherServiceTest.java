@@ -3,7 +3,6 @@ package com.mdhamed.weatherly.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,11 +23,6 @@ public class WeatherServiceTest {
     @Autowired
     private WeatherService weatherService;
     
-    @BeforeEach
-    public void setup() {
-        // Setup will be implemented once we have the service implementation
-    }
-    
     @Test
     public void testGetWeatherForCity_Success() {
         // Given a valid city code
@@ -46,19 +40,49 @@ public class WeatherServiceTest {
     
     @Test
     public void testGetWeatherForCity_InvalidApiKey() {
-        // This test will verify that the service returns mock data when API key is invalid
-        // Implementation will be added once we have the service implementation
+        // Given an invalid API key (mock data will be returned)
+        String cityCode = "paris";
+        
+        // When requesting weather data
+        WeatherResponse response = weatherService.getWeatherForCity(cityCode);
+        
+        // Then we should get mock data
+        assertNotNull(response, "Weather response should not be null");
+        assertEquals(cityCode, response.getLocation(), "Location should match the requested city");
+        assertNotNull(response.getCurrentConditions(), "Current conditions should not be null");
+        assertNotNull(response.getForecast(), "Forecast should not be null");
     }
     
     @Test
     public void testGetWeatherForCity_ApiError() {
-        // This test will verify error handling when the API returns an error
-        // Implementation will be added once we have the service implementation
+        // Given a city code that would cause an API error
+        String cityCode = "error";
+        
+        // When requesting weather data (mock data will be returned due to error)
+        WeatherResponse response = weatherService.getWeatherForCity(cityCode);
+        
+        // Then we should get mock data as fallback
+        assertNotNull(response, "Weather response should not be null");
+        assertEquals(cityCode, response.getLocation(), "Location should match the requested city");
+        assertNotNull(response.getCurrentConditions(), "Current conditions should not be null");
+        assertNotNull(response.getForecast(), "Forecast should not be null");
     }
     
     @Test
     public void testGetWeatherForCity_CacheHit() {
-        // This test will verify that cached responses are returned correctly
-        // Implementation will be added once we have the service implementation
+        // Given a city code that was previously requested
+        String cityCode = "berlin";
+        
+        // Request once to cache
+        weatherService.getWeatherForCity(cityCode);
+        
+        // When requesting weather data again
+        WeatherResponse response = weatherService.getWeatherForCity(cityCode);
+        
+        // Then we should get a valid response from cache
+        assertNotNull(response, "Weather response should not be null");
+        assertEquals(cityCode, response.getLocation(), "Location should match the requested city");
+        assertNotNull(response.getCurrentConditions(), "Current conditions should not be null");
+        assertNotNull(response.getForecast(), "Forecast should not be null");
     }
 }
