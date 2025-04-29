@@ -18,7 +18,7 @@
 - [x] Create WeatherServiceTest
 - [x] Create WeatherControllerTest
 - [x] Create HealthControllerTest
-- [ ] Implement all test methods
+- [x] Implement all test methods
 - [ ] Achieve good test coverage
 
 ## Environment & Configuration
