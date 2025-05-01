@@ -5,8 +5,7 @@ services:
       repo: mdhamed238/weatherly
       branch: main
       deploy_on_push: true
-    build_command: mvn clean package -DskipTests
-    run_command: java -jar target/weatherly-0.0.1-SNAPSHOT.war
+    dockerfile_path: Dockerfile
     http_port: 8080
     instance_size_slug: basic-xxs
     envs:
@@ -16,5 +15,19 @@ services:
         type: SECRET
       - key: APP_API_KEY_ENABLED
         value: "true"
+        scope: RUN_TIME
       - key: SERVER_PORT
         value: "8080"
+        scope: RUN_TIME
+      - key: APP_CACHE_TIME_TO_LIVE
+        value: "43200000"
+        scope: RUN_TIME
+      - key: APP_RATE_LIMIT_CAPACITY
+        value: "20"
+        scope: RUN_TIME
+      - key: APP_RATE_LIMIT_REFILL_TOKENS
+        value: "10"
+        scope: RUN_TIME
+      - key: APP_RATE_LIMIT_REFILL_DURATION
+        value: "1"
+        scope: RUN_TIME
