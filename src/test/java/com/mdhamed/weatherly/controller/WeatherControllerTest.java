@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.mdhamed.weatherly.model.CurrentConditions;
@@ -24,6 +25,7 @@ import com.mdhamed.weatherly.model.WeatherResponse;
 import com.mdhamed.weatherly.service.WeatherService;
 
 @WebMvcTest(WeatherController.class)
+@ActiveProfiles("test")
 @Import(WeatherControllerTest.TestConfig.class)
 public class WeatherControllerTest {
 

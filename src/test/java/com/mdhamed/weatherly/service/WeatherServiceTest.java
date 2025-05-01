@@ -6,19 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
+import com.mdhamed.weatherly.config.TestConfig;
 import com.mdhamed.weatherly.model.WeatherResponse;
 
 /**
  * Test class for WeatherService implementation
  */
 @SpringBootTest
+@ActiveProfiles("test")
+@Import(TestConfig.class)
 public class WeatherServiceTest {
-
-    @MockBean
-    private WebClient webClient;
     
     @Autowired
     private WeatherService weatherService;

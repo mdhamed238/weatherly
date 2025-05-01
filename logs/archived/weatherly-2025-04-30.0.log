@@ -1,0 +1,28 @@
+2025-04-30 00:28:15 [main] INFO  c.m.weatherly.WeatherlyApplication - Starting WeatherlyApplication using Java 21.0.5 with PID 50656 (/Users/mohamed/dev/projects/weatherly/target/classes started by mohamed in /Users/mohamed/dev/projects/weatherly)
+2025-04-30 00:28:15 [main] DEBUG c.m.weatherly.WeatherlyApplication - Running with Spring Boot v3.4.5, Spring v6.2.6
+2025-04-30 00:28:15 [main] INFO  c.m.weatherly.WeatherlyApplication - No active profile set, falling back to 1 default profile: "default"
+2025-04-30 00:28:16 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-04-30 00:28:16 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-04-30 00:28:16 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 6 ms. Found 0 Redis repository interfaces.
+2025-04-30 00:28:16 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-04-30 00:28:16 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2025-04-30 00:28:16 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-04-30 00:28:16 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.40]
+2025-04-30 00:28:16 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-04-30 00:28:16 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1009 ms
+2025-04-30 00:28:16 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-04-30 00:28:17 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2025-04-30 00:28:17 [main] INFO  o.s.v.b.OptionalValidatorFactoryBean - Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-04-30 00:28:17 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 9 mappings in 'requestMappingHandlerMapping'
+2025-04-30 00:28:17 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-04-30 00:28:17 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-04-30 00:28:17 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-04-30 00:28:17 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 6 endpoints beneath base path '/actuator'
+2025-04-30 00:28:17 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2025-04-30 00:28:17 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-04-30 00:28:17 [main] DEBUG o.s.d.r.l.RedisMessageListenerContainer - Starting RedisMessageListenerContainer...
+2025-04-30 00:28:17 [main] DEBUG o.s.d.r.l.RedisMessageListenerContainer - Postpone listening for Redis messages until actual listeners are added
+2025-04-30 00:28:17 [main] INFO  c.m.weatherly.WeatherlyApplication - Started WeatherlyApplication in 2.597 seconds (process running for 2.739)
+2025-04-30 00:32:31 [SpringApplicationShutdownHook] DEBUG o.s.d.r.l.RedisMessageListenerContainer - Stopped RedisMessageListenerContainer
+2025-04-30 00:32:31 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-04-30 00:32:31 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete

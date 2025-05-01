@@ -59,8 +59,6 @@ WEATHER_API_KEY=your_visual_crossing_api_key
 # Optional
 REDIS_HOST=localhost
 REDIS_PORT=6379
-API_KEY=your_api_key_here
-API_KEY_ENABLED=true
 ```
 
 ### Running Locally
@@ -90,17 +88,23 @@ This will start both the Weatherly API and Redis container for caching.
 
 ### API Key Authentication
 
-When enabled, all API endpoints require an API key to be included in the request header:
+The API can be protected with API key authentication. When enabled, all requests to `/api/**` endpoints must include a valid API key in the header.
+
+To enable API key authentication:
+
+```properties
+# In .env file or environment variables
+WEATHER_API_KEY=your_secret_key
+APP_API_KEY_ENABLED=true
+```
+
+Then include the API key in your requests:
 
 ```bash
-curl -X GET "http://localhost:8080/api/weather/london" -H "X-API-Key: your_api_key_here"
+curl -X GET "http://localhost:8080/api/weather/london" -H "accept: application/json" -H "X-API-Key: your_secret_key"
 ```
 
-Enable API key authentication by setting:
-```
-API_KEY=your_secret_key
-API_KEY_ENABLED=true
-```
+Note: The same `WEATHER_API_KEY` is used for both accessing the external weather API service and for authenticating requests to this API service.
 
 ### Rate Limiting
 

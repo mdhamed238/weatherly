@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,8 +38,9 @@ public class ApiKeyInterceptorTest {
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         
-        when(apiKeyConfig.getHeaderName()).thenReturn(HEADER_NAME);
-        when(apiKeyConfig.getApiKey()).thenReturn(VALID_API_KEY);
+        // Use lenient() to avoid unnecessary stubbing warnings
+        lenient().when(apiKeyConfig.getHeaderName()).thenReturn(HEADER_NAME);
+        lenient().when(apiKeyConfig.getApiKey()).thenReturn(VALID_API_KEY);
     }
 
     @Test

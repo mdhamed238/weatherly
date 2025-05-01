@@ -37,7 +37,7 @@ public class WeatherServiceImpl implements WeatherService {
     @Value("${weather.api.url}")
     private String apiUrl;
 
-    @Value("${weather.api.key}")
+    @Value("${weather.api.key:${WEATHER_API_KEY:DUMMY_KEY_FOR_DEVELOPMENT}}")
     private String apiKey;
 
     @Override
@@ -48,15 +48,15 @@ public class WeatherServiceImpl implements WeatherService {
         
         try {
             // If we have a valid API key, try to get real data
-            if (apiKey != null && !apiKey.isEmpty() && !apiKey.equals("DUMMY_KEY_FOR_DEVELOPMENT")) {
-                log.info("Using real API to fetch weather data for: {}", cityCode);
-                weatherApiCallCounter.increment();
-                
-                return weatherApiCallTimer.record(() -> fetchFromApi(cityCode));
-            } else {
+            if (apiKey == null || apiKey.isEmpty() || apiKey.equals("DUMMY_KEY_FOR_DEVELOPMENT")) {
                 log.warn("No valid API key found, returning mock data for: {}", cityCode);
                 return getMockWeatherData(cityCode);
             }
+            
+            // Use real API with valid key
+            log.info("Using real API to fetch weather data for: {}", cityCode);
+            weatherApiCallCounter.increment();
+            return weatherApiCallTimer.record(() -> fetchFromApi(cityCode));
         } catch (Exception e) {
             log.error("Error fetching weather data from API: {}", e.getMessage(), e);
             // Return mock data in case of error
@@ -66,12 +66,13 @@ public class WeatherServiceImpl implements WeatherService {
 
     private WeatherResponse fetchFromApi(String cityCode) {
         log.debug("Making HTTP request to weather API for city: {}", cityCode);
+        log.info("API URL: {}, City Code: {}", apiUrl, cityCode);
         return webClient.get()
                 .uri(apiUrl + "/{cityCode}?unitGroup=metric&key={apiKey}", cityCode, apiKey)
                 .retrieve()
                 .bodyToMono(WeatherResponse.class)
-                .doOnSuccess(response -> log.debug("Successfully retrieved weather data for city: {}", cityCode))
-                .doOnError(error -> log.error("Error retrieving weather data for city: {}", cityCode, error))
+                .doOnSuccess(response -> log.info("Successfully retrieved weather data from Visual Crossing API for city: {}", cityCode))
+                .doOnError(error -> log.error("Error retrieving weather data from Visual Crossing API for city: {}: {}", cityCode, error.getMessage(), error))
                 .block();
     }
 
