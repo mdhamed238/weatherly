@@ -1,0 +1,42 @@
+name: weatherly
+region: fra
+services:
+  - name: weatherly-api
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: mdhamed238/weatherly
+    build_command: mvn clean package -DskipTests
+    run_command: java -jar target/weatherly-0.0.1-SNAPSHOT.war
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    envs:
+      - key: WEATHER_API_KEY
+        scope: RUN_TIME
+        value: ${WEATHER_API_KEY}
+      - key: APP_API_KEY_ENABLED
+        scope: RUN_TIME
+        value: "true"
+      - key: SERVER_PORT
+        scope: RUN_TIME
+        value: "8080"
+      - key: APP_CACHE_TIME_TO_LIVE
+        scope: RUN_TIME
+        value: "43200000"
+      - key: APP_RATE_LIMIT_CAPACITY
+        scope: RUN_TIME
+        value: "20"
+      - key: APP_RATE_LIMIT_REFILL_TOKENS
+        scope: RUN_TIME
+        value: "10"
+      - key: APP_RATE_LIMIT_REFILL_DURATION
+        scope: RUN_TIME
+        value: "1"
+  - name: redis
+    image:
+      registry_type: DOCKER_HUB
+      repository: redis
+      tag: 7-alpine
+    instance_count: 1
+    instance_size_slug: basic-xxs
