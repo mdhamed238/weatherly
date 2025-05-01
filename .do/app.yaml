@@ -1,7 +1,7 @@
-name: weatherly
+name: weatherly-api-service
 region: fra
 services:
-  - name: weatherly-api
+  - name: api
     github:
       branch: main
       deploy_on_push: true
@@ -11,8 +11,6 @@ services:
     http_port: 8080
     instance_count: 1
     instance_size_slug: basic-xxs
-    routes:
-      - path: /
     envs:
       - key: WEATHER_API_KEY
         scope: RUN_TIME
@@ -35,12 +33,6 @@ services:
       - key: APP_RATE_LIMIT_REFILL_DURATION
         scope: RUN_TIME
         value: "1"
-      - key: REDIS_HOST
-        scope: RUN_TIME
-        value: ${redis.HOSTNAME}
-      - key: REDIS_PORT
-        scope: RUN_TIME
-        value: ${redis.PORT}
   - name: redis
     image:
       registry_type: DOCKER_HUB
